@@ -1,6 +1,6 @@
 
 TODO:
 
-- implement db connection
+X implement db connection
 - stub methods for table creation and inserts
 - implement defined interface
