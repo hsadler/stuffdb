@@ -1,7 +1,49 @@
 
 Q: What does this tool do?
 
-A: Creates and stuff tables with test data.
+A: Creates and stuff mysql tables with test data.
+
+
+Q: How do I use it?
+
+A: This is a command line script. It can be called with arguments or an
+   "options" json file. Here's the interface:
+
+	ex (with args):
+		python stuffdb.py \
+		--db="my_db" \
+		--password="my_password" \
+		--table="my_table" \
+		--columns="col_1 int PRIMARY KEY, col_2 varchar(255) NOT NULL" \
+		--densities="col_1 33, col_2 0" \
+		--amount="10000";
+
+	ex (with json file):
+		python stuffdb.py --file="my_options_file.json"
+	options file contents:
+		{
+			"database": "my_db",
+			"password": "my_password",
+			"table": "my_table",
+			"columns": [
+				{
+					"name": "col_1",
+					"datatype": "int",
+					"constraint": "PRIMARY KEY",
+					"density": 33
+				},
+				{
+					"name": "col_2",
+					"datatype": "varchar(225)",
+					"constraint": "NOT NULL",
+					"density": 0
+				},
+			],
+			"amount": 10000
+		}
+
+
+
 
 
 
