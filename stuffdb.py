@@ -10,8 +10,9 @@ import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
 
+# mock data
 options = {
-	"database": "test",
+	"database": "testdb",
 	"password": "",
 	"table": "stuff_test_1",
 	"columns": [
@@ -28,7 +29,7 @@ options = {
 			"density": 0
 		},
 	],
-	"amount": 10000
+	"count": 10000
 }
 
 
@@ -49,10 +50,12 @@ cur.execute('SET character_set_connection=utf8;')
 # db interface methods
 def get_tables(cur):
 	cur.execute("""SHOW TABLES;""")
-	return [
+	tables = [
 		table['Tables_in_{}'.format(options['database'])]
 		for table in cur.fetchall()
 	]
+	print 'tables: ' + str(tables)
+	return tables
 
 def create_table(cur, table, column_info):
 	print 'creating table: ' + table
@@ -61,6 +64,15 @@ def insert_to_table(cur, table, columns, insert_values):
 	print 'inserting to table: ' + table
 
 
+# data generation methods
+def get_integer_insert_values(count, density):
+	pass
+
+def get_string_insert_values(count, density):
+	pass
+
+
+# do the script stuff
 with connection:
 
 	# get current table list

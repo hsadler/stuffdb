@@ -17,7 +17,7 @@ A: This is a command line script. It can be called with arguments or an
 		--table="my_table" \
 		--columns="col_1 int PRIMARY KEY, col_2 varchar(255) NOT NULL" \
 		--densities="col_1 33, col_2 0" \
-		--amount="10000";
+		--count="10000";
 
 	ex (with json file):
 		python stuffdb.py --file="my_options_file.json"
@@ -40,6 +40,6 @@ A: This is a command line script. It can be called with arguments or an
 					"density": 0
 				},
 			],
-			"amount": 10000
+			"count": 10000
 		}
 
