@@ -12,34 +12,60 @@ A: This is a command line script. It can be called with arguments or an
 
 	ex (with args):
 		python stuffdb.py \
-		--db="my_db" \
+		--user="root"\
 		--password="my_password" \
+		--db="my_db" \
 		--table="my_table" \
-		--columns="col_1 int PRIMARY KEY, col_2 varchar(255) NOT NULL" \
-		--densities="col_1 33, col_2 0" \
+		--columns="col_1 int PRIMARY KEY, col_2 varchar(255) NOT NULL, col_3 varchar(225)" \
+		--cardinalities="col_1 3, col_2 Infinity" \
+		--distributions="col_3 20"
 		--count="10000";
 
 	ex (with json file):
 		python stuffdb.py --file="my_options_file.json"
 	options file contents:
 		{
-			"database": "my_db",
+			"user": "root",
 			"password": "my_password",
+			"database": "my_db",
 			"table": "my_table",
 			"columns": [
 				{
 					"name": "col_1",
 					"datatype": "int",
 					"constraint": "PRIMARY KEY",
-					"density": 33
+					"cardinality": 3
 				},
 				{
 					"name": "col_2",
 					"datatype": "varchar(225)",
 					"constraint": "NOT NULL",
-					"density": 0
+					"cardinality": Infinity
+				},
+				{
+					"name": "col_3",
+					"datatype": "varchar(225)"
+					"distribution": 20
 				},
 			],
 			"count": 10000
 		}
+
+	explanation of options:
+		"user" - username to access database
+		"password" - password for user
+		"database" - database name
+		"table" - table name
+		"columns":
+			"name" - column name
+			"datatype" - the same datatype format you enter in a mysql query
+			"constraint" - the same constraint format you enter in a mysql query
+			"cardinality" - the amount of different elements in a table (1 - Infinity)
+			"distribution" - alternative to cardinality, distribution percentage of elements
+
+
+
+
+
+
 

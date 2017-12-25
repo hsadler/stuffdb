@@ -20,13 +20,13 @@ options = {
 			"name": "col_1",
 			"datatype": "int",
 			"constraint": "PRIMARY KEY",
-			"density": 33
+			"distribution": 33
 		},
 		{
 			"name": "col_2",
 			"datatype": "varchar(225)",
 			"constraint": "NOT NULL",
-			"density": 0
+			"distribution": 0
 		},
 	],
 	"count": 10000
@@ -65,10 +65,16 @@ def insert_to_table(cur, table, columns, insert_values):
 
 
 # data generation methods
-def get_integer_insert_values(count, density):
-	pass
+def get_integer_insert_values(count, distribution):
+	curr = 0
+	values = range(0, )
 
-def get_string_insert_values(count, density):
+# test:
+print get_integer_insert_values(50, 10)
+sys.exit()
+
+
+def get_string_insert_values(count, distribution):
 	pass
 
 
