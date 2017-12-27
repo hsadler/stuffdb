@@ -20,13 +20,13 @@ options = {
 			"name": "col_1",
 			"datatype": "int",
 			"constraint": "PRIMARY KEY",
-			"distribution": 33
+			"cardinality": 3
 		},
 		{
 			"name": "col_2",
 			"datatype": "varchar(225)",
 			"constraint": "NOT NULL",
-			"distribution": 0
+			"cardinality": "Infinity"
 		},
 	],
 	"count": 10000
@@ -65,17 +65,21 @@ def insert_to_table(cur, table, columns, insert_values):
 
 
 # data generation methods
-def get_integer_insert_values(count, distribution):
+def get_integer_insert_values(count, cardinality):
 	curr = 0
-	values = range(0, )
+	integer_set = range(0, cardinality)
+	values = integer_set
+	while len(values) < count:
+		values += integer_set
+	return values[0:count]
 
-# test:
-print get_integer_insert_values(50, 10)
-sys.exit()
+def get_string_insert_values(count, cardinality):
+	int_values = get_integer_insert_values(count, cardinality)
+	return [ hex(val) for val in int_values ]
 
 
-def get_string_insert_values(count, distribution):
-	pass
+# query generation methods
+
 
 
 # do the script stuff
