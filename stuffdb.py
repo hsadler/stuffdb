@@ -47,6 +47,75 @@ cur.execute('SET CHARACTER SET utf8;')
 cur.execute('SET character_set_connection=utf8;')
 
 
+# data generation methods
+def generate_integer_insert_values(count, cardinality):
+	curr = 0
+	integer_set = range(0, cardinality)
+	values = integer_set
+	while len(values) < count:
+		values += integer_set
+	return values[0:count]
+
+def generate_string_insert_values(count, cardinality):
+	int_values = get_integer_insert_values(count, cardinality)
+	return [ hex(val) for val in int_values ]
+
+
+# query build method
+def build_insert_query(table, *column_datas):
+
+	"""
+		Args:
+			table: <str>
+			*column_datas: {
+				name: <str>
+				insert_values: [
+					<int, str>,
+					...
+				]
+			}
+
+		Returns:
+			insert_query: <str>
+	"""
+
+	columns = []
+	values = []
+
+	for column_data in column_datas:
+		columns.append(column_data['name'])
+		# STOPPED HERE... BUILDING INSERT QUERY STRING INSERT VALUES............
+
+	insert_query = """
+		INSERT INTO {table_name}
+			{columns_str}
+		VALUES
+			{values_str};
+	""".format(
+		table_name=table_name,
+		column_str=columns_str,
+		values_str=values_str
+	)
+
+	print insert_query
+
+	return insert_query
+
+
+# TESTING:
+build_insert_query(
+	table,
+	{
+		name: 'insert-integers',
+		insert_values: [1, 2, 3]
+	},
+	{
+		name: 'insert-strings',
+		insert_values: ['a', 'b', 'c']
+	}
+)
+
+
 # db interface methods
 def get_tables(cur):
 	cur.execute("""SHOW TABLES;""")
@@ -64,25 +133,7 @@ def insert_to_table(cur, table, columns, insert_values):
 	print 'inserting to table: ' + table
 
 
-# data generation methods
-def get_integer_insert_values(count, cardinality):
-	curr = 0
-	integer_set = range(0, cardinality)
-	values = integer_set
-	while len(values) < count:
-		values += integer_set
-	return values[0:count]
-
-def get_string_insert_values(count, cardinality):
-	int_values = get_integer_insert_values(count, cardinality)
-	return [ hex(val) for val in int_values ]
-
-
-# query generation methods
-
-
-
-# do the script stuff
+# do the db table creation and inserts
 with connection:
 
 	# get current table list
