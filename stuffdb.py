@@ -82,9 +82,31 @@ def build_insert_query(table, *column_datas):
 	columns = []
 	values = []
 
+	# preset values inner arrays
+	val_sets_length = min([ len(x['insert_values']) for x in column_datas ])
+	for i in range(0, val_sets_length):
+		values.append([])
+
+	# build columns and values lists
 	for column_data in column_datas:
 		columns.append(column_data['name'])
-		# STOPPED HERE... BUILDING INSERT QUERY STRING INSERT VALUES............
+		for i in range(0, val_sets_length):
+			val = column_data['insert_values'][i]
+			values[i].append(val)
+
+	table_name = table
+	columns_str = '(' + ",".join(columns) + ')'
+	# build values string
+	values_str = []
+	for val_list in values:
+		val_set_str = []
+		for v in val_list:
+			if isinstance(v, str):
+				val_set_str.append('"' + v + '"')
+			else:
+				val_set_str.append(str(v))
+		values_str.append('(' + ','.join(val_set_str) + ')')
+	values_str = ','.join(values_str)
 
 	insert_query = """
 		INSERT INTO {table_name}
@@ -93,27 +115,35 @@ def build_insert_query(table, *column_datas):
 			{values_str};
 	""".format(
 		table_name=table_name,
-		column_str=columns_str,
+		columns_str=columns_str,
 		values_str=values_str
 	)
-
-	print insert_query
 
 	return insert_query
 
 
 # TESTING:
-build_insert_query(
-	table,
+query_string = build_insert_query(
+	'table',
 	{
-		name: 'insert-integers',
-		insert_values: [1, 2, 3]
+		"name": 'insert-integers',
+		"insert_values": [1, 2, 3]
 	},
 	{
-		name: 'insert-strings',
-		insert_values: ['a', 'b', 'c']
+		"name": 'insert-strings',
+		"insert_values": ['a', 'b', 'c']
 	}
 )
+
+print query_string
+
+# should output:
+	# INSERT INTO table
+	# 	(insert-integers, insert-strings)
+	# VALUES
+	# 	(1, 'a'),
+	# 	(2, 'b'),
+	# 	(3, 'c')
 
 
 # db interface methods
