@@ -56,25 +56,52 @@ def generate_integer_insert_values(count, cardinality):
 		values += integer_set
 	return values[0:count]
 
+
 def generate_string_insert_values(count, cardinality):
 	int_values = get_integer_insert_values(count, cardinality)
 	return [ hex(val) for val in int_values ]
 
 
-# query build method
-def build_insert_query(table, *column_datas):
+
+# query string builder methods
+def build_create_table_query(table_name, column_schema):
+
+	"""
+		Args:
+			table_name: <str>
+			column_schema:
+			[
+				{
+					"name": <str>,
+					"datatype": <str>,
+					"constraint": <str>
+				},
+				...
+			]
+		Returns:
+			insert_query: <str>
+	"""
+
+	create_table_query = 'im the create_table_query'
+
+	return create_table_query
+
+
+def build_insert_query(table_name, column_datas):
 
 	"""
 		Args:
 			table: <str>
-			*column_datas: {
-				name: <str>
-				insert_values: [
-					<int, str>,
-					...
-				]
-			}
-
+			column_datas: [
+				{
+					"name": <str>
+					"insert_values": [
+						<int || str>,
+						...
+					]
+				},
+				...
+			]
 		Returns:
 			insert_query: <str>
 	"""
@@ -94,7 +121,6 @@ def build_insert_query(table, *column_datas):
 			val = column_data['insert_values'][i]
 			values[i].append(val)
 
-	table_name = table
 	columns_str = '(' + ",".join(columns) + ')'
 	# build values string
 	values_str = []
@@ -122,29 +148,6 @@ def build_insert_query(table, *column_datas):
 	return insert_query
 
 
-# TESTING:
-query_string = build_insert_query(
-	'table',
-	{
-		"name": 'insert-integers',
-		"insert_values": [1, 2, 3]
-	},
-	{
-		"name": 'insert-strings',
-		"insert_values": ['a', 'b', 'c']
-	}
-)
-
-print query_string
-
-# should output:
-	# INSERT INTO table
-	# 	(insert-integers, insert-strings)
-	# VALUES
-	# 	(1, 'a'),
-	# 	(2, 'b'),
-	# 	(3, 'c')
-
 
 # db interface methods
 def get_tables(cur):
@@ -153,14 +156,19 @@ def get_tables(cur):
 		table['Tables_in_{}'.format(options['database'])]
 		for table in cur.fetchall()
 	]
-	print 'tables: ' + str(tables)
 	return tables
 
-def create_table(cur, table, column_info):
-	print 'creating table: ' + table
+
+def create_table(cur, table_name, column_schema):
+	print 'creating table:'
+	print table_name
+	print 'with column schema:'
+	print str(column_schema)
+
 
 def insert_to_table(cur, table, columns, insert_values):
 	print 'inserting to table: ' + table
+
 
 
 # do the db table creation and inserts
@@ -168,13 +176,14 @@ with connection:
 
 	# get current table list
 	tables = get_tables(cur=cur)
+	print 'tables: ' + str(tables)
 
 	# create table if does not exist
 	if options['table'] not in tables:
 		create_table(
 			cur=cur,
 			table=options['table'],
-			column_info=None
+			column_schema=options['columns']
 		)
 
 	# insert test data
@@ -184,6 +193,49 @@ with connection:
 		columns=None,
 		insert_values=None
 	)
+
+
+
+
+
+# TESTING:
+query_string = build_insert_query(
+	table_name='table',
+	column_datas=[
+		{
+			"name": 'insert_integers',
+			"insert_values": [1, 2, 3]
+		},
+		{
+			"name": 'insert_strings',
+			"insert_values": ['a', 'b', 'c']
+		}
+	]
+)
+print query_string
+# should output:
+	# INSERT INTO table
+	# 	(insert_integers, insert_strings)
+	# VALUES
+	# 	(1, 'a'),
+	# 	(2, 'b'),
+	# 	(3, 'c')
+
+query_string = build_create_table_query(
+	table_name,
+	column_schema
+)
+print query_string
+# should output:
+	# INSERT INTO table
+	# 	(insert_integers, insert_strings)
+	# VALUES
+	# 	(1, 'a'),
+	# 	(2, 'b'),
+	# 	(3, 'c')
+
+
+
 
 
 # example stuffing query:
