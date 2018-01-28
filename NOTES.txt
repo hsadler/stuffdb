@@ -12,7 +12,8 @@ A: This is a command line script. It can be called with arguments or an
 
 	ex (with args):
 		python stuffdb.py \
-		--user="root"\
+		--host="localhost" \
+		--user="root" \
 		--password="my_password" \
 		--db="my_db" \
 		--table="my_table" \
@@ -26,6 +27,7 @@ A: This is a command line script. It can be called with arguments or an
 		python stuffdb.py --file="my_options_file.json"
 	options file contents:
 		{
+			"host": "localhost",
 			"user": "root",
 			"password": "my_password",
 			"database": "my_db",
@@ -53,6 +55,7 @@ A: This is a command line script. It can be called with arguments or an
 		}
 
 	explanation of options:
+		"host" - <str> host of database
 		"user" - <str> username to access database
 		"password" - <str> password for user
 		"database" - <str> database name
@@ -67,6 +70,7 @@ A: This is a command line script. It can be called with arguments or an
 				in the table
 			"distribution" - <int (0-100)> alternative to cardinality,
 				distribution percentage of elements
+		"count" - <int> amount of records to insert
 
 
 

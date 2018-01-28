@@ -12,9 +12,11 @@ pp = pprint.PrettyPrinter(indent=4)
 
 # mock data
 options = {
-	"database": "testdb",
+	"host": "localhost",
+	"user": "root",
 	"password": "",
-	"table": "stuff_test_1",
+	"database": "testdb",
+	"table": "my_table",
 	"columns": [
 		{
 			"name": "col_1",
@@ -28,6 +30,11 @@ options = {
 			"constraint": "NOT NULL",
 			"cardinality": "Infinity"
 		},
+		{
+			"name": "col_3",
+			"datatype": "varchar(225)",
+			"distribution": 20
+		},
 	],
 	"count": 10000
 }
@@ -35,8 +42,8 @@ options = {
 
 # setup db connection
 connection = mdb.connect(
-	host='localhost',
-	user='root',
+	host=options['host'],
+	user=options['user'],
 	db=options['database'],
 	passwd=options['password']
 )
@@ -183,7 +190,7 @@ def create_table(cur, table_name, column_schema):
 	cur.execute(create_table_query)
 
 
-def insert_to_table(cur, table, columns, insert_values):
+def insert_to_table(cur, table_name, columns, insert_values):
 	pass
 
 
@@ -208,11 +215,10 @@ with connection:
 	print 'inserting data to table: ' + options['table']
 	insert_to_table(
 		cur=cur,
-		table=options['table'],
+		table_name=options['table'],
 		columns=None,
 		insert_values=None
 	)
-
 
 
 
