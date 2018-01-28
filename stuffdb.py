@@ -82,7 +82,23 @@ def build_create_table_query(table_name, column_schema):
 			insert_query: <str>
 	"""
 
-	create_table_query = 'im the create_table_query'
+	columns_str = ','.join([
+		(
+			col['name'] +
+			' ' + col['datatype'] +
+			(' ' + col['constraint'] if 'constraint' in col else '')
+		)
+		for col in column_schema
+	])
+
+	create_table_query = """
+		CREATE TABLE {table_name} (
+			{columns_str}
+		);
+	""".format(
+		table_name=table_name,
+		columns_str=columns_str
+	)
 
 	return create_table_query
 
@@ -160,14 +176,15 @@ def get_tables(cur):
 
 
 def create_table(cur, table_name, column_schema):
-	print 'creating table:'
-	print table_name
-	print 'with column schema:'
-	print str(column_schema)
+	create_table_query = build_create_table_query(
+		table_name=table_name,
+		column_schema=column_schema
+	)
+	cur.execute(create_table_query)
 
 
 def insert_to_table(cur, table, columns, insert_values):
-	print 'inserting to table: ' + table
+	pass
 
 
 
@@ -180,13 +197,15 @@ with connection:
 
 	# create table if does not exist
 	if options['table'] not in tables:
+		print 'creating table: ' + options['table']
 		create_table(
 			cur=cur,
-			table=options['table'],
+			table_name=options['table'],
 			column_schema=options['columns']
 		)
 
 	# insert test data
+	print 'inserting data to table: ' + options['table']
 	insert_to_table(
 		cur=cur,
 		table=options['table'],
@@ -197,8 +216,34 @@ with connection:
 
 
 
-
 # TESTING:
+query_string = build_create_table_query(
+	table_name="my_table",
+	column_schema=[
+		{
+			"name": "col_1",
+			"datatype": "int",
+			"constraint": "PRIMARY KEY"
+		},
+		{
+			"name": "col_2",
+			"datatype": "varchar(225)",
+			"constraint": "NOT NULL"
+		},
+		{
+			"name": "col_3",
+			"datatype": "int"
+		}
+	]
+)
+print query_string
+# should output:
+	# CREATE TABLE my_table (
+	# 	col_1 int PRIMARY KEY,
+	# 	col_2 varchar(225) NOT NULL
+	# )
+
+
 query_string = build_insert_query(
 	table_name='table',
 	column_datas=[
@@ -211,19 +256,6 @@ query_string = build_insert_query(
 			"insert_values": ['a', 'b', 'c']
 		}
 	]
-)
-print query_string
-# should output:
-	# INSERT INTO table
-	# 	(insert_integers, insert_strings)
-	# VALUES
-	# 	(1, 'a'),
-	# 	(2, 'b'),
-	# 	(3, 'c')
-
-query_string = build_create_table_query(
-	table_name,
-	column_schema
 )
 print query_string
 # should output:
