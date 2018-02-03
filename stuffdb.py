@@ -2,12 +2,12 @@
 
 # MySQL test data stuffing tool
 
-
 import sys
 import MySQLdb as mdb
 
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
+
 
 
 # mock data
@@ -40,6 +40,19 @@ options = {
 }
 
 
+
+# constants
+ datatype_map= {
+ 	'string': [
+ 		'CHAR', 'VARCHAR', 'BINARY', 'VARBINARY', 'BLOB', 'TEXT', 'ENUM', 'SET'
+	],
+	'int': [
+		'INTEGER', 'INT', 'SMALLINT', 'TINYINT', 'MEDIUMINT', 'BIGINT'
+	]
+ }
+
+
+
 # setup db connection
 connection = mdb.connect(
 	host=options['host'],
@@ -52,6 +65,15 @@ connection.set_character_set('utf8')
 cur.execute('SET NAMES utf8;')
 cur.execute('SET CHARACTER SET utf8;')
 cur.execute('SET character_set_connection=utf8;')
+
+
+
+# helpers
+def get_simple_datatype_from_mysql_datatype(mysql_datatype):
+	for key, val in datatype_map.iteritems():
+		if mysql_datatype in val:
+			return key
+	return None
 
 
 # data generation methods
@@ -190,8 +212,72 @@ def create_table(cur, table_name, column_schema):
 	cur.execute(create_table_query)
 
 
-def insert_to_table(cur, table_name, columns, insert_values):
-	pass
+def insert_to_table(cur, table_name, column_insert_data, count, batch_count):
+
+	# TODOs for this function:
+	# 	- consider datatype, count, and cardinality/distribution
+	#	- create value lists per column
+	#	- get insert query string
+	#	- execute insert query
+
+	# EXAMPLE column_insert_data:
+	# [
+	# 	{
+	# 		"name": "col_1",
+	# 		"datatype": "int",
+	# 		"constraint": "PRIMARY KEY",
+	# 		"cardinality": 3
+	# 	},
+	# 	{
+	# 		"name": "col_2",
+	# 		"datatype": "varchar(225)",
+	# 		"constraint": "NOT NULL",
+	# 		"cardinality": "Infinity"
+	# 	},
+	# 	{
+	# 		"name": "col_3",
+	# 		"datatype": "varchar(225)",
+	# 		"distribution": 20
+	# 	},
+	# ]
+
+	# EXAMPLE BUILD INSERT QUERY CALL:
+	# build_insert_query(
+	# 	table_name='table',
+	# 	column_datas=[
+	# 		{
+	# 			"name": 'insert_integers',
+	# 			"insert_values": [1, 2, 3]
+	# 		},
+	# 		{
+	# 			"name": 'insert_strings',
+	# 			"insert_values": ['a', 'b', 'c']
+	# 		}
+	# 	]
+	# )
+
+	column_datas = []
+	for insert_data in column_insert_data:
+		values = []
+		simple_datatype = get_simple_datatype_from_mysql_datatype(
+			insert_data['datatype']
+		)
+		if simple_datatype === 'int':
+			values = generate_integer_insert_values(count, cardinality)
+		elif simple_datatype === 'string':
+			values = generate_string_insert_values(count, cardinality)
+		col_data = {
+			'name': insert_data['name'],
+			'insert_values': values
+		}
+		column_datas.append(col_data)
+
+	insert_query = build_insert_query(
+		table_name=table_name,
+		column_datas=column_datas
+	)
+
+	cur.execute(insert_query)
 
 
 
@@ -216,8 +302,9 @@ with connection:
 	insert_to_table(
 		cur=cur,
 		table_name=options['table'],
-		columns=None,
-		insert_values=None
+		column_insert_data=options['columns'],
+		count=options['count'],
+		batch_count=100 # TODO: hardcoded for now
 	)
 
 
@@ -271,35 +358,3 @@ print query_string
 	# 	(1, 'a'),
 	# 	(2, 'b'),
 	# 	(3, 'c')
-
-
-
-
-
-# example stuffing query:
-
-# INSERT INTO table_name
-# 	(col_1_name, col_2_name, col_3_name)
-# VALUES
-# 	('string_1', 'string_2', 'string_3'),
-# 	('string_1', 'string_2', 'string_3'),
-# 	('string_1', 'string_2', 'string_3'),
-# 	('string_1', 'string_2', 'string_3'),
-# 	('string_1', 'string_2', 'string_3'),
-# 	('string_1', 'string_2', 'string_3');
-
-
-# test query execution
-# with connection:
-#     cur.execute("""
-#         SELECT table_name AS "Table",
-#         ROUND(((data_length + index_length) / 1024 / 1024), 2) AS "Size (MB)"
-#         FROM information_schema.TABLES
-#         WHERE table_schema = "{db_name}"
-#         ORDER BY (data_length + index_length) DESC;
-#     """.format(db_name=options['database']))
-
-# print 'db test connection:'
-# pp.pprint(cur.fetchall())
-
-
