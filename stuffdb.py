@@ -33,7 +33,7 @@ options = {
         {
             "name": "col_3",
             "datatype": "varchar(225)",
-            "distribution": 20
+            "cardinality": 20
         },
     ],
     "count": 10000
@@ -264,8 +264,8 @@ def insert_to_table(cur, table_name, column_insert_data, count, batch_count):
         simple_datatype = get_simple_datatype_from_mysql_datatype(
             insert_data['datatype']
         )
-        # TODO: cast this var
         cardinality = insert_data['cardinality']
+        cardinality = cardinality if type(cardinality) is int else count
         if simple_datatype == 'int':
             values = generate_integer_insert_values(
                 count=count,
@@ -282,14 +282,12 @@ def insert_to_table(cur, table_name, column_insert_data, count, batch_count):
         }
         column_datas.append(col_data)
 
-    print column_datas
-
     insert_query = build_insert_query(
         table_name=table_name,
         column_datas=column_datas
     )
 
-    # print insert_query
+    print insert_query
     sys.exit()
 
     cur.execute(insert_query)
