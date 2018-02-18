@@ -28,15 +28,15 @@ options = {
             "name": "col_2",
             "datatype": "varchar(225)",
             "constraint": "NOT NULL",
-            "cardinality": 3
+            "cardinality": "Infinity"
         },
         {
             "name": "col_3",
             "datatype": "varchar(225)",
-            "cardinality": 20
+            "cardinality": "Infinity"
         },
     ],
-    "count": 10000
+    "count": 1000000
 }
 
 
@@ -214,6 +214,11 @@ def create_table(cur, table_name, column_schema):
     cur.execute(create_table_query)
 
 
+def truncate_table(cur, table_name):
+    truncate_query = 'TRUNCATE TABLE {}'.format(table_name)
+    cur.execute(truncate_query)
+
+
 def insert_to_table(cur, table_name, column_insert_data, count, batch_count):
 
     # TODOs for this function:
@@ -263,13 +268,18 @@ with connection:
     tables = get_tables(cur=cur)
     print 'tables: ' + str(tables)
 
-    # create table if does not exist
+    # create table if does not exist, otherwise truncate
     if options['table'] not in tables:
         print 'creating table: ' + options['table']
         create_table(
             cur=cur,
             table_name=options['table'],
             column_schema=options['columns']
+        )
+    else:
+        truncate_table(
+            cur=cur,
+            table_name=options['table']
         )
 
     # insert test data
