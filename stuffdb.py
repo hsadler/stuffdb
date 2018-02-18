@@ -22,13 +22,13 @@ options = {
             "name": "col_1",
             "datatype": "int",
             "constraint": "PRIMARY KEY",
-            "cardinality": 3
+            "cardinality": "Infinity"
         },
         {
             "name": "col_2",
             "datatype": "varchar(225)",
             "constraint": "NOT NULL",
-            "cardinality": "Infinity"
+            "cardinality": 3
         },
         {
             "name": "col_3",
@@ -217,46 +217,11 @@ def create_table(cur, table_name, column_schema):
 def insert_to_table(cur, table_name, column_insert_data, count, batch_count):
 
     # TODOs for this function:
-    #   - consider datatype, count, and cardinality/distribution
-    #   - create value lists per column
-    #   - get insert query string
-    #   - execute insert query
-
-    # EXAMPLE column_insert_data:
-    # [
-    #   {
-    #       "name": "col_1",
-    #       "datatype": "int",
-    #       "constraint": "PRIMARY KEY",
-    #       "cardinality": 3
-    #   },
-    #   {
-    #       "name": "col_2",
-    #       "datatype": "varchar(225)",
-    #       "constraint": "NOT NULL",
-    #       "cardinality": "Infinity"
-    #   },
-    #   {
-    #       "name": "col_3",
-    #       "datatype": "varchar(225)",
-    #       "distribution": 20
-    #   },
-    # ]
-
-    # EXAMPLE BUILD INSERT QUERY CALL:
-    # build_insert_query(
-    #   table_name='table',
-    #   column_datas=[
-    #       {
-    #           "name": 'insert_integers',
-    #           "insert_values": [1, 2, 3]
-    #       },
-    #       {
-    #           "name": 'insert_strings',
-    #           "insert_values": ['a', 'b', 'c']
-    #       }
-    #   ]
-    # )
+    #   X consider datatype, count, and cardinality/distribution
+    #   X create value lists per column
+    #   X get insert query string
+    #   X execute insert query
+    #   - implement batch_count
 
     column_datas = []
     for insert_data in column_insert_data:
@@ -287,9 +252,6 @@ def insert_to_table(cur, table_name, column_insert_data, count, batch_count):
         column_datas=column_datas
     )
 
-    print insert_query
-    sys.exit()
-
     cur.execute(insert_query)
 
 
@@ -319,6 +281,8 @@ with connection:
         count=options['count'],
         batch_count=100 # TODO: hardcoded for now
     )
+
+sys.exit()
 
 
 
