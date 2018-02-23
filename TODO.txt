@@ -8,3 +8,5 @@ X implement defined interface
     X sql query generation methods
     X db interface methods
 - add insertion batching for very large insert counts
+- add consumption of cli args or json file
+- add tests
