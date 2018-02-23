@@ -3,7 +3,8 @@ TODO:
 
 X implement db connection
 X stub methods for table creation and inserts
-- implement defined interface
+X implement defined interface
     X data generation methods (naive version)
-    - sql query generation methods
-    - db interface methods
+    X sql query generation methods
+    X db interface methods
+- add insertion batching for very large insert counts
